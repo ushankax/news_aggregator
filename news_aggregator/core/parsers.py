@@ -9,13 +9,6 @@ class SiteParser:
         self.title_class = title_class
         self.link_list = []
 
-    def get_urls_from_page(self, soup) -> list:
-        """Return list of links from page"""
-        for link in soup.find_all('a', class_=self.title_class):
-            self.link_list.append(link.get('href'))
-
-        return self.link_list
-
     def get_urls(self) -> list:
         """Return full list of links from all pages"""
         flag = True
@@ -23,14 +16,18 @@ class SiteParser:
 
         while flag:
             soup = BeautifulSoup(r.text, 'lxml')
-            self.get_urls_from_page(soup)
+
+            for link in soup.find_all('a', class_=self.title_class):
+                self.link_list.append(link.get('href'))
+
+            next_page = None
 
             for a in soup.find_all('a', id='next_page'):
-                next_link = a['href']
+                next_page = a['href']
 
-            if next_link:
-                r = requests.get("{}{}".format(self.url, next_link[-6:]))
-                next_link = None
+            if next_page:
+                r = requests.get("{}{}".format(self.url[:16], next_page))
+                next_page = None
             else:
                 flag = False
 
@@ -42,6 +39,4 @@ class SiteParser:
         soup = BeautifulSoup(r.text, 'lxml')
         return (soup.h1.get_text(),
                 soup.find('div', class_="post__body post__body_full").get_text())
-
-
 
