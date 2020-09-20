@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'core',
     'rest_framework',
     'accounts',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -129,5 +130,15 @@ STATIC_URL = '/static/'
 
 REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-        'PAGE_SIZE': 2,
+        'PAGE_SIZE': 5,
 }
+
+
+# Redis settings
+REDIS_HOST = 'localhost'
+REDIS_PORT = '6379'
+BROKER_URL = 'redis://{}:{}/0'.format(REDIS_HOST, REDIS_PORT)
+BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+
+# Celery settings
+CELERY_RESULT_BACKEND = 'redis://{}:{}/0'.format(REDIS_HOST, REDIS_PORT)
