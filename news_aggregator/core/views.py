@@ -17,5 +17,5 @@ class ArticleViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """filter news by current user subscriptions"""
         subs = self.request.user.profile.subscriptions
-        return Article.objects.filter(source__in=subs)
+        return Article.objects.filter(source__in=subs).order_by('-import_date')
 
