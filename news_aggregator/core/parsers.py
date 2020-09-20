@@ -1,5 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
+from .models import Article
+import re
 
 
 class SiteParser:
@@ -42,8 +44,10 @@ class SiteParser:
 
         h1 = soup.h1.get_text()
         title = h1.strip()
-        text = soup.find('div', class_=self.body_class).get_text()
 
+        raw_text = soup.find('div', class_=self.body_class).get_text()
+        text = re.sub('\n', '', raw_text)
+        text = re.sub('\r', '', text)
         return title, text
 
 
@@ -68,15 +72,18 @@ class VCParser(SiteParser):
         r = requests.get(article)
         soup = BeautifulSoup(r.text, 'lxml')
 
-        h1 = soup.h1
-        h1.a.extract()
-        title = h1.get_text()
+        if soup.h1:
+            h1 = soup.h1
+            title_raw = h1.get_text()
+            title = re.sub('\n\n\nМатериал редакции', '', title_raw)
+        else:
+            title = "No Title"
 
         text = ''
 
         for div in soup.find_all('div', class_=self.body_class):
             for p in div('p'):
-                text += "\n{}".format(p.get_text())
+                text += p.get_text()
 
         return title.strip(), text
 
