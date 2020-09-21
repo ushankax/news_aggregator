@@ -1,0 +1,20 @@
+language: python
+version:
+  - "3.6"
+  - "3.8"
+services:
+  - postgresql
+env:
+  - DJANGO_VERSION: 3.1.1
+install:
+  - pip install -r requirements.txt
+before_script:
+  - psql -c 'create database travis_ci_test;' -U postgres
+  - psql -c 'create database news_aggregator;' -U postgres
+  - psql -c "create user admin with password 'adminadmin';" -U postgres
+  - psql -c "alter user admin createdb;" -U postgres
+  - cd news_aggregator
+script:
+  - python3 manage.py makemigrations
+  - python3 manage.py migrate
+  - python3 manage.py test
