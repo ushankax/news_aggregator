@@ -17,7 +17,11 @@ def import_latest_news():
             title_and_text = vc.get_title_and_text(link)
             title, text = title_and_text
 
-            article = Article.objects.create(source='vc', title=title, link=link, text=text, text_preview=text[:700])
+            article = Article.objects.create(source='vc',
+                                             title=title,
+                                             link=link,
+                                             text=text,
+                                             text_preview=text[:700])
             print(article)
 
     habr = parsers.HabrParser()
@@ -30,7 +34,11 @@ def import_latest_news():
             title_and_text = habr.get_title_and_text(link)
             title, text = title_and_text
 
-            article = Article.objects.create(source='habr', title=title, link=link, text=text, text_preview=text[:700])
+            article = Article.objects.create(source='habr',
+                                             title=title,
+                                             link=link,
+                                             text=text,
+                                             text_preview=text[:700])
             print(article)
 
     return json.dumps({"status": True})

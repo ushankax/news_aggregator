@@ -1,7 +1,6 @@
 from rest_framework import viewsets, permissions
 from .serializers import ArticleSerializer, ArticleListSerializer
 from .models import Article
-from django.contrib.auth.models import User
 
 
 class ArticleViewSet(viewsets.ModelViewSet):

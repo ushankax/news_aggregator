@@ -1,4 +1,3 @@
-from .models import Profile
 from rest_framework import viewsets
 from .serializers import UserSerializer
 from django.contrib.auth.models import User
@@ -20,12 +19,17 @@ class UserViewSet(viewsets.ModelViewSet):
         elif self.request.user.is_authenticated:
             queryset = User.objects.filter(pk=self.request.user.pk)
 
-        serializer = UserSerializer(queryset, context={'request': request}, many=True)
+        serializer = UserSerializer(queryset,
+                                    context={'request': request},
+                                    many=True)
 
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
-        """define permissions for detail user view (users can only edit their own profiles)"""
+        """
+        define permissions for detail user view
+        (users can only edit their own profiles)
+        """
         content = {'status': 'request was permitted'}
 
         if self.request.user.is_anonymous:
@@ -44,5 +48,3 @@ class UserViewSet(viewsets.ModelViewSet):
                 return Response(serializer.data)
             else:
                 return Response(content)
-
-

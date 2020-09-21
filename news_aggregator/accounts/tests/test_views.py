@@ -1,7 +1,5 @@
 from django.test import TestCase, Client
-from accounts.views import UserViewSet
 from django.contrib.auth.models import User
-from accounts.models import Profile
 
 
 class UserViewSetTest(TestCase):
@@ -10,13 +8,11 @@ class UserViewSetTest(TestCase):
     def setUpTestData(cls):
         for n in range(3):
             user = User.objects.create_user(username='user{}'.format(n),
-                                            password='password'
-                                           )
+                                            password='password')
             user.save()
 
         superuser = User.objects.create_superuser(username='superuser',
-                                                  password='password',
-                                                 )
+                                                  password='password')
         superuser.save()
 
     def setUp(self):
@@ -55,14 +51,13 @@ class UserViewSetTest(TestCase):
         self.assertEqual(user_data["username"], 'user1')
 
     def test_logged_users_cannot_see_another_detail_pages(self):
-        user = self.client.login(username='user1', password='password')
+        self.client.login(username='user1', password='password')
         resp = self.client.get('/users/6/')
         response = resp.json()
         self.assertEqual(response['status'], 'request was permitted')
 
     def test_superuser_can_see_all_detail_pages(self):
-        superuser = self.client.login(username='superuser', password='password')
+        self.client.login(username='superuser', password='password')
         resp = self.client.get('/users/5/')
         user_data = resp.json()
         self.assertEqual(len(user_data), 3)
-

@@ -1,5 +1,4 @@
 from django.test import TestCase, Client
-from accounts.serializers import UserSerializer
 from django.contrib.auth.models import User
 from django.contrib import auth
 from accounts.models import Profile
@@ -21,8 +20,10 @@ class UserSerializerTest(TestCase):
             'subscriptions': ['vc']
         }
 
-        self.user = User.objects.create_user(username='patch_user', password='password')
-        self.profile = Profile.objects.create(user=self.user, subscriptions=['habr'])
+        self.user = User.objects.create_user(username='patch_user',
+                                             password='password')
+        self.profile = Profile.objects.create(user=self.user,
+                                              subscriptions=['habr'])
         self.user.save()
         self.profile.save()
 
@@ -37,7 +38,9 @@ class UserSerializerTest(TestCase):
 
     def test_user_can_update_your_profile(self):
         self.client.login(username='patch_user', password='password')
-        resp = self.client.patch('/users/1/', self.serializer_patch_data, content_type='application/json')
+        resp = self.client.patch('/users/1/',
+                                 self.serializer_patch_data,
+                                 content_type='application/json')
         print(resp.status_code)
 
         user = auth.get_user(self.client)

@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-from .models import Article
 import re
 
 
@@ -86,4 +85,3 @@ class VCParser(SiteParser):
                 text += p.get_text()
 
         return title.strip(), text
-

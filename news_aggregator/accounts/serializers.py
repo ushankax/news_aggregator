@@ -5,7 +5,8 @@ from django.contrib.auth.models import User
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     """Serialize profile data"""
-    subscriptions = serializers.ListField(child=serializers.CharField(max_length=100))
+    subscriptions = serializers.ListField(
+            child=serializers.CharField(max_length=100))
 
     class Meta:
         model = Profile
@@ -24,11 +25,12 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         """create new user profile"""
         user = User.objects.create_user(
-            username = validated_data['username'],
-            password = validated_data.pop('password')
+            username=validated_data['username'],
+            password=validated_data.pop('password')
             )
         subscriptions = validated_data['profile']['subscriptions']
-        profile = Profile.objects.create(user=user, subscriptions=subscriptions)
+        profile = Profile.objects.create(user=user,
+                                         subscriptions=subscriptions)
 
         user.save()
         profile.save()
@@ -49,4 +51,3 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             profile.save()
 
         return instanse
-
