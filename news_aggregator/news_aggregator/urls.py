@@ -21,7 +21,7 @@ from accounts import views as accounts_views
 
 
 router = routers.DefaultRouter()
-router.register(r'articles', core_views.ArticleViewSet, basename='articles')
+router.register(r'articles', core_views.ArticleViewSet, basename='article')
 router.register(r'users', accounts_views.UserViewSet)
 
 urlpatterns = [
