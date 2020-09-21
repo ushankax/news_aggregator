@@ -8,7 +8,6 @@ class Article(models.Model):
     title = models.CharField(max_length=255)
     link = models.URLField(max_length=255)
     text = models.TextField()
-    text_preview = models.TextField()
     import_date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
