@@ -29,7 +29,7 @@ class VCParserTest(TestCase):
         self.article = 'https://vc.ru/transport/159612-avtopilot-tesla-sbezhal-ot-policii-v-kanade-voditel-usnul-i-mashina-uhodila-ot-pogoni-sama'
 
     def test_get_urls(self):
-        self.assertEqual(len(self.p.get_urls()), 12)
+        self.assertGreater(len(self.p.get_urls()), 11)
 
     def test_get_title_and_text(self):
         title, text = self.p.get_title_and_text(self.article)
