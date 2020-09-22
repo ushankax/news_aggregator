@@ -32,9 +32,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         profile = Profile.objects.create(user=user,
                                          subscriptions=subscriptions)
 
-        user.save()
-        profile.save()
-
         return user
 
     def update(self, instanse, validated_data):
@@ -46,6 +43,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         instanse.save()
 
         profile = instanse.profile
+
         if profile_data and subscriptions:
             profile.subscriptions = subscriptions
             profile.save()

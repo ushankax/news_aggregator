@@ -1,27 +1,36 @@
 import requests
 from bs4 import BeautifulSoup
 import re
+import logging
+from .models import Article
+
+
+logger = logging.getLogger(__name__)
 
 
 class SiteParser:
-    """Class-template for parsing news from sites like habr, vc"""
+    """base class for parsing news from sites like habr, vc"""
 
     def __init__(self, url, title_class, body_class):
         self.url = url
         self.title_class = title_class
         self.body_class = body_class
 
-    def get_urls(self) -> list:
-        """Return full list of links from all pages"""
+    def get_article_urls(self) -> list:
+        """return full list of links from all pages"""
         flag = True
-        r = requests.get(self.url)
-        link_list = []
+
+        try:
+            r = requests.get(self.url)
+            r.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            logger.error(err)
 
         while flag:
             soup = BeautifulSoup(r.text, 'lxml')
 
             for link in soup.find_all('a', class_=self.title_class):
-                link_list.append(link.get('href'))
+                yield link.get('href')
 
             next_page = None
 
@@ -29,16 +38,24 @@ class SiteParser:
                 next_page = a['href']
 
             if next_page:
-                r = requests.get("{}{}".format(self.url[:16], next_page))
+                try:
+                    r = requests.get("{}{}".format(self.url[:16], next_page))
+                    r.raise_for_status()
+                except requests.exceptions.HTTPError as err:
+                    logger.error(err)
+
                 next_page = None
             else:
                 flag = False
 
-        return link_list
-
     def get_title_and_text(self, article) -> tuple:
-        """Return title and text from the article"""
-        r = requests.get(article)
+        """return title and text from the article"""
+        try:
+            r = requests.get(article)
+            r.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            logger.error(err)
+
         soup = BeautifulSoup(r.text, 'lxml')
 
         h1 = soup.h1.get_text()
@@ -51,24 +68,32 @@ class SiteParser:
 
 
 class HabrParser(SiteParser):
-    """Class based on SiteParser adapted for parsing from habr.com"""
+    """class based on SiteParser adapted for parsing from habr.com"""
 
     def __init__(self):
         self.url = 'https://habr.com/ru/top/'
         self.title_class = 'post__title_link'
         self.body_class = 'post__body post__body_full'
+        self.source = 'habr'
 
 
 class VCParser(SiteParser):
-    """Class based on SitiParser adapted for parsing from vc.ru"""
+    """class based on SiteParser adapted for parsing from vc.ru"""
 
     def __init__(self):
         self.url = 'https://vc.ru/'
         self.title_class = 'content-feed__link'
         self.body_class = 'content content--full'
+        self.source = 'vc'
 
     def get_title_and_text(self, article) -> tuple:
-        r = requests.get(article)
+        """vc articles sometimes haven't titles and can have redaction mark"""
+        try:
+            r = requests.get(article)
+            r.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            logging.error(err)
+
         soup = BeautifulSoup(r.text, 'lxml')
 
         if soup.h1:
@@ -85,3 +110,20 @@ class VCParser(SiteParser):
                 text += p.get_text()
 
         return title.strip(), text
+
+
+def get_news_from_site(site):
+    """template which load news to postgres from single site"""
+    article_links = site.get_article_urls()
+
+    for link in article_links:
+        if Article.objects.filter(link=link):
+            pass
+        else:
+            title_and_text = site.get_title_and_text(link)
+            title, text = title_and_text
+
+            article = Article.objects.create(source=site.source,
+                                             title=title,
+                                             link=link,
+                                             text=text)

@@ -11,11 +11,11 @@ class SiteParserTest(TestCase):
                             'post__title_link',
                             'post__body post__body_full')
 
-    def test_get_urls(self):
-        self.assertEqual(len(self.p.get_urls()), 41)
+    def test_get_article_urls(self):
+        self.assertEqual(len(list(self.p.get_article_urls())), 41)
 
     def test_get_title_and_text(self):
-        article = self.p.get_urls()[0]
+        article = list(self.p.get_article_urls())[0]
         title, text = self.p.get_title_and_text(article)
         expect = '[Разбор] Инвестиции и спекуляции:'\
                  ' в чем на самом деле разница'
@@ -34,7 +34,7 @@ class VCParserTest(TestCase):
                        '-usnul-i-mashina-uhodila-ot-pogoni-sama'
 
     def test_get_urls(self):
-        self.assertGreater(len(self.p.get_urls()), 11)
+        self.assertGreater(len(list(self.p.get_article_urls())), 11)
 
     def test_get_title_and_text(self):
         title, text = self.p.get_title_and_text(self.article)

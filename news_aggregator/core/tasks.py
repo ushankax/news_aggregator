@@ -1,44 +1,20 @@
-from news_aggregator.celery import app
+from celery import shared_task
 import json
 from . import parsers
-from .models import Article
+import logging
 
 
-@app.task()
-def import_latest_news():
-    """upload unique articles from sites in database"""
+logger = logging.getLogger(__name__)
+
+
+@shared_task
+def get_daily_news():
+    """upload unique articles from sites to database"""
     vc = parsers.VCParser()
-    vc_links = vc.get_urls()
-
-    for link in vc_links:
-        if Article.objects.filter(link=link):
-            pass
-        else:
-            title_and_text = vc.get_title_and_text(link)
-            title, text = title_and_text
-
-            article = Article.objects.create(source='vc',
-                                             title=title,
-                                             link=link,
-                                             text=text,
-                                             text_preview=text[:700])
-            print(article)
-
     habr = parsers.HabrParser()
-    habr_links = habr.get_urls()
 
-    for link in habr_links:
-        if Article.objects.filter(link=link):
-            pass
-        else:
-            title_and_text = habr.get_title_and_text(link)
-            title, text = title_and_text
+    parsers.get_news_from_site(vc)
+    parsers.get_news_from_site(habr)
 
-            article = Article.objects.create(source='habr',
-                                             title=title,
-                                             link=link,
-                                             text=text,
-                                             text_preview=text[:700])
-            print(article)
-
+    logger.info('success news loaded')
     return json.dumps({"status": True})
