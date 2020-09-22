@@ -141,7 +141,16 @@ BROKER_URL = 'redis://{}:{}/0'.format(REDIS_HOST, REDIS_PORT)
 BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
 
 # Celery settings
+from celery.schedules import crontab
+
 CELERY_RESULT_BACKEND = 'redis://{}:{}/0'.format(REDIS_HOST, REDIS_PORT)
+CELERY_TIMEZONE = 'Europe/Moscow'
+CELERY_BEAT_SCHEDULE = {
+        'load_news': {
+            'task': 'core.tasks.get_daily_news',
+            'schedule': crontab(minute='*/1'),
+        },
+}
 
 # Logging settings
 LOGGING = {
@@ -154,15 +163,15 @@ LOGGING = {
         },
         'handlers': {
             'file': {
-                'level': 'DEBUG',
+                'level': 'INFO',
                 'class': 'logging.FileHandler',
                 'formatter': 'file',
-                'filename': 'debug.log',
+                'filename': 'logging.log',
             },
         },
         'loggers': {
             'file': {
-                'level': 'DEBUG',
+                'level': 'INFO',
                 'handlers': ['file'],
                 'propagate': True,
             },
