@@ -142,3 +142,29 @@ BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
 
 # Celery settings
 CELERY_RESULT_BACKEND = 'redis://{}:{}/0'.format(REDIS_HOST, REDIS_PORT)
+
+# Logging settings
+LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'file': {
+                'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+            },
+        },
+        'handlers': {
+            'file': {
+                'level': 'DEBUG',
+                'class': 'logging.FileHandler',
+                'formatter': 'file',
+                'filename': 'debug.log',
+            },
+        },
+        'loggers': {
+            'file': {
+                'level': 'DEBUG',
+                'handlers': ['file'],
+                'propagate': True,
+            },
+        },
+}
