@@ -41,5 +41,6 @@ class UserSerializerTest(TestCase):
         resp = self.client.patch('/users/1/',
                                  self.serializer_patch_data,
                                  content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
         user = auth.get_user(self.client)
         self.assertEqual(user.username, 'new_user777')

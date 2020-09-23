@@ -51,8 +51,8 @@ class VCParserTest(TestCase):
     def test_get_news_from_vc(self):
         get_news_from_site(self.p)
         vc_articles_count = Article.objects.filter(source='vc').count()
-        vc_distinct_articles_count = Article.objects.filter(source='vc')\
-                .distinct().count()
+        vc_distinct_articles_count = Article.objects.filter(source='vc') \
+                                                    .distinct().count()
         self.assertGreater(vc_articles_count, 11)
         get_news_from_site(self.p)
         self.assertEqual(vc_articles_count, vc_distinct_articles_count)
@@ -74,8 +74,8 @@ class HabrParserTest(TestCase):
     def test_get_news_from_habr(self):
         get_news_from_site(self.p)
         habr_articles_count = Article.objects.filter(source='habr').count()
-        habr_distinct_articles_count = Article.objects.filter(source='habr')\
-                .distinct().count()
+        habr_distinct_articles_count = Article.objects.filter(source='habr') \
+                                                      .distinct().count()
         self.assertGreater(habr_articles_count, 20)
         get_news_from_site(self.p)
         self.assertEqual(habr_articles_count, habr_distinct_articles_count)

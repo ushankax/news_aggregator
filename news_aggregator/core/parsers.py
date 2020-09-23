@@ -123,7 +123,7 @@ def get_news_from_site(site):
             title_and_text = site.get_title_and_text(link)
             title, text = title_and_text
 
-            article = Article.objects.create(source=site.source,
-                                             title=title,
-                                             link=link,
-                                             text=text)
+            Article.objects.create(source=site.source,
+                                   title=title,
+                                   link=link,
+                                   text=text)

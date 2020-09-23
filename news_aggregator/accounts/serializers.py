@@ -29,8 +29,8 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             password=validated_data.pop('password')
             )
         subscriptions = validated_data['profile']['subscriptions']
-        profile = Profile.objects.create(user=user,
-                                         subscriptions=subscriptions)
+        Profile.objects.create(user=user,
+                               subscriptions=subscriptions)
 
         return user
 
