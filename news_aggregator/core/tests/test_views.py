@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from accounts.models import Profile
 from core.models import Article
 from core.parsers import HabrParser
+from django.contrib import auth
+import re
 
 
 class ArticleViewSetTest(TestCase):
@@ -42,6 +44,8 @@ class ArticleViewSetTest(TestCase):
 
     def test_view_url_exists(self):
         self.client.login(username='habr_user', password='password')
+        user = auth.get_user(self.client)
+        self.assertTrue(user.is_authenticated)
         resp = self.client.get('/articles/')
         self.assertEqual(resp.status_code, 200)
 
@@ -51,6 +55,8 @@ class ArticleViewSetTest(TestCase):
 
     def test_user_gets_correct_news_by_subscription(self):
         self.client.login(username='habr_user', password='password')
+        user = auth.get_user(self.client)
+        self.assertTrue(user.is_authenticated)
         resp = self.client.get('/articles/')
 
         self.assertEqual(resp.resolver_match.func.__name__,
@@ -60,6 +66,8 @@ class ArticleViewSetTest(TestCase):
     def test_listing_text_is_preview(self):
         """check that 'text' field in listing less than 700 characters"""
         self.client.login(username='habr_user', password='password')
+        user = auth.get_user(self.client)
+        self.assertTrue(user.is_authenticated)
         resp = self.client.get('/articles/')
 
         test_article = resp.json()['results'][0]
@@ -68,6 +76,11 @@ class ArticleViewSetTest(TestCase):
     def test_detail_text_is_full(self):
         """check that 'text' field in detail view is full"""
         self.client.login(username='habr_user', password='password')
-        resp = self.client.get('/articles/2/')
+        user = auth.get_user(self.client)
+        self.assertTrue(user.is_authenticated)
+        resp = self.client.get('/articles/')
+        article = resp.json()['results'][0]
+        article_pk = re.sub('http://testserver/articles/', '', article['url'])
+        resp = self.client.get('/articles/{}'.format(str(article_pk)))
         test_article = resp.json()['text']
         self.assertGreater(len(test_article), 700)

@@ -1,6 +1,7 @@
 from django.test import TestCase
-from core.parsers import SiteParser, VCParser, HabrParser
+from core.parsers import SiteParser, VCParser, HabrParser, get_news_from_site
 import re
+from core.models import Article
 
 
 class SiteParserTest(TestCase):
@@ -47,6 +48,15 @@ class VCParserTest(TestCase):
         title, text = self.p.get_title_and_text(self.no_title_article)
         self.assertEqual(title, 'No Title')
 
+    def test_get_news_from_vc(self):
+        get_news_from_site(self.p)
+        vc_articles_count = Article.objects.filter(source='vc').count()
+        vc_distinct_articles_count = Article.objects.filter(source='vc')\
+                .distinct().count()
+        self.assertGreater(vc_articles_count, 11)
+        get_news_from_site(self.p)
+        self.assertEqual(vc_articles_count, vc_distinct_articles_count)
+
 
 class HabrParserTest(TestCase):
 
@@ -60,3 +70,12 @@ class HabrParserTest(TestCase):
         article = 'https://habr.com/ru/company/ruvds/blog/519884/'
         title, text = self.p.get_title_and_text(article)
         self.assertIsNone(re.search('\n', text))
+
+    def test_get_news_from_habr(self):
+        get_news_from_site(self.p)
+        habr_articles_count = Article.objects.filter(source='habr').count()
+        habr_distinct_articles_count = Article.objects.filter(source='habr')\
+                .distinct().count()
+        self.assertGreater(habr_articles_count, 20)
+        get_news_from_site(self.p)
+        self.assertEqual(habr_articles_count, habr_distinct_articles_count)
