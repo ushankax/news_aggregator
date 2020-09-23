@@ -146,7 +146,7 @@ REST_FRAMEWORK = {
 # Redis settings
 REDIS_HOST = 'localhost'
 REDIS_PORT = '6379'
-BROKER_URL = 'redis://{}:{}/0'.format(REDIS_HOST, REDIS_PORT)
+BROKER_URL = 'redis://h:pe50798549f9e518f16adc0740cce070e8291b003f5d3759c85a6bc772c96d770@ec2-54-158-163-50.compute-1.amazonaws.com:19899'
 BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
 
 # Celery settings
