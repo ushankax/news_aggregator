@@ -157,7 +157,7 @@ CELERY_TIMEZONE = 'Europe/Moscow'
 CELERY_BEAT_SCHEDULE = {
         'load_news': {
             'task': 'core.tasks.get_daily_news',
-            'schedule': crontab(minute='*/10'),
+            'schedule': crontab(hour='*/24'),
         },
 }
 

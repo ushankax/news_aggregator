@@ -12,7 +12,7 @@ before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
   - psql -c 'create database news_aggregator;' -U postgres
   - psql -c "create user admin with password 'adminadmin';" -U postgres
-  - psql -c "alter user admin createdb;" -U postgres
+  - psql -c "alter role admin superuser;" -U postgres
   - cd news_aggregator
 script:
   - python3 manage.py makemigrations
