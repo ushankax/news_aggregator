@@ -11,8 +11,8 @@ class ArticleViewSet(viewsets.ModelViewSet):
         """filter news by current user subscriptions"""
         subs = self.request.user.profile.subscriptions
         return Article.objects.filter(source__in=subs) \
-                              .order_by('link', '-import_date') \
-                              .distinct('link')
+                              .order_by('-import_date', 'link') \
+                              .distinct('import_date', 'link')
 
     def get_serializer_class(self):
         """news with preview text when listing"""
