@@ -61,7 +61,7 @@ class ArticleViewSetTest(TestCase):
 
         self.assertEqual(resp.resolver_match.func.__name__,
                          ArticleViewSet.as_view({'get': 'list'}).__name__)
-        self.assertEqual(len(resp.json()['results']), 3)
+        self.assertEqual(resp.json()['results'][0]['title'], 'Непобедимый')
 
     def test_listing_text_is_preview(self):
         """check that 'text' field in listing less than 700 characters"""

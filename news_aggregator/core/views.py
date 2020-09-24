@@ -10,7 +10,9 @@ class ArticleViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """filter news by current user subscriptions"""
         subs = self.request.user.profile.subscriptions
-        return Article.objects.filter(source__in=subs).order_by('-import_date')
+        return Article.objects.filter(source__in=subs) \
+                              .order_by('link', '-import_date') \
+                              .distinct('link')
 
     def get_serializer_class(self):
         """news with preview text when listing"""
