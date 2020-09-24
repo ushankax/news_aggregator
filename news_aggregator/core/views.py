@@ -1,4 +1,5 @@
 from rest_framework import viewsets, permissions
+
 from .serializers import ArticleSerializer, ArticleListSerializer
 from .models import Article
 
@@ -11,8 +12,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
         """filter news by current user subscriptions"""
         subs = self.request.user.profile.subscriptions
         return Article.objects.filter(source__in=subs) \
-                              .order_by('-import_date', 'link') \
-                              .distinct('import_date', 'link')
+                              .order_by('-import_date')
 
     def get_serializer_class(self):
         """news with preview text when listing"""
